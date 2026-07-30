@@ -25,11 +25,12 @@ describe('App', () => {
       response: {
         status: 200,
         statusText: 'OK',
-        headers: {},
+        headers: [],
         body: '{"done":true}',
         contentType: 'application/json',
         elapsedMs: 10,
         sizeBytes: 13,
+        truncated: false,
       },
     })
     render(<App />)

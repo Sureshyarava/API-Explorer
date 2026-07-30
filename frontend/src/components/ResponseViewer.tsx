@@ -1,22 +1,20 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { ProxyResponseData } from '../types'
 import { MetaBar, formatSize } from './MetaBar'
 import { StatusBadge } from './StatusBadge'
 
-export function formatBody(
-  body: string | null,
-): { text: string; isJson: boolean } | null {
+export function formatBody(body: string | null): string | null {
   if (body === null) return null
   try {
-    return { text: JSON.stringify(JSON.parse(body), null, 2), isJson: true }
+    return JSON.stringify(JSON.parse(body), null, 2)
   } catch {
-    return { text: body, isJson: false }
+    return body
   }
 }
 
 export function ResponseViewer({ response }: { response: ProxyResponseData }) {
   const [tab, setTab] = useState<'body' | 'headers'>('body')
-  const formatted = formatBody(response.body)
+  const formatted = useMemo(() => formatBody(response.body), [response.body])
 
   return (
     <section className="response-viewer">
@@ -24,6 +22,11 @@ export function ResponseViewer({ response }: { response: ProxyResponseData }) {
         <StatusBadge status={response.status} statusText={response.statusText} />
         <MetaBar elapsedMs={response.elapsedMs} sizeBytes={response.sizeBytes} />
       </div>
+      {response.truncated && (
+        <p className="json-warning">
+          Response truncated — showing the first {formatSize(response.sizeBytes)}
+        </p>
+      )}
       <div className="tabs">
         <button type="button" onClick={() => setTab('body')}>
           Body
@@ -38,13 +41,13 @@ export function ResponseViewer({ response }: { response: ProxyResponseData }) {
             Binary response ({formatSize(response.sizeBytes)}) — not displayed
           </p>
         ) : (
-          <pre className="response-body">{formatted.text}</pre>
+          <pre className="response-body">{formatted}</pre>
         ))}
       {tab === 'headers' && (
         <table className="response-headers">
           <tbody>
-            {Object.entries(response.headers).map(([k, v]) => (
-              <tr key={k}>
+            {response.headers.map(([k, v], i) => (
+              <tr key={`${k}-${i}`}>
                 <td>{k}</td>
                 <td>{v}</td>
               </tr>

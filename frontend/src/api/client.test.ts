@@ -6,11 +6,12 @@ const okEnvelope = {
   response: {
     status: 200,
     statusText: 'OK',
-    headers: {},
+    headers: [],
     body: '{}',
     contentType: 'application/json',
     elapsedMs: 5,
     sizeBytes: 2,
+    truncated: false,
   },
 }
 

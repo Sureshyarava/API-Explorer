@@ -32,6 +32,7 @@ export function RequestForm({
 }) {
   const [method, setMethod] = useState<HttpMethod>('GET')
   const [url, setUrl] = useState('')
+  const [urlError, setUrlError] = useState<string | null>(null)
   const [rows, setRows] = useState<HeaderRow[]>([{ key: '', value: '' }])
   const [body, setBody] = useState('')
 
@@ -39,9 +40,15 @@ export function RequestForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    const trimmed = url.trim()
+    // mirrors the backend's Pydantic rule so bad URLs fail inline, not as a 422
+    if (!/^https?:\/\//i.test(trimmed)) {
+      setUrlError('URL must start with http:// or https://')
+      return
+    }
     onSend({
       method,
-      url,
+      url: trimmed,
       headers: buildHeaders(rows),
       body: hasBody && body !== '' ? body : null,
     })
@@ -65,12 +72,16 @@ export function RequestForm({
         <input
           placeholder="https://api.example.com/endpoint"
           value={url}
-          onChange={(e) => setUrl(e.target.value)}
+          onChange={(e) => {
+            setUrl(e.target.value)
+            setUrlError(null)
+          }}
         />
         <button type="submit" disabled={inFlight || url.trim() === ''}>
           {inFlight ? 'Sending…' : 'Send'}
         </button>
       </div>
+      {urlError && <p className="form-error">{urlError}</p>}
       <HeadersEditor rows={rows} onChange={setRows} />
       {hasBody && <BodyEditor value={body} onChange={setBody} />}
     </form>

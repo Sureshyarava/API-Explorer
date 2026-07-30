@@ -46,6 +46,25 @@ describe('RequestForm', () => {
     )
   })
 
+  it('shows an inline error and does not send when the URL has no http scheme', () => {
+    const onSend = vi.fn()
+    render(<RequestForm inFlight={false} onSend={onSend} />)
+    fireEvent.change(url(), { target: { value: 'foo' } })
+    fireEvent.click(screen.getByText('Send'))
+    expect(onSend).not.toHaveBeenCalled()
+    expect(
+      screen.getByText('URL must start with http:// or https://'),
+    ).toBeInTheDocument()
+  })
+
+  it('clears the URL error once the user edits the URL', () => {
+    render(<RequestForm inFlight={false} onSend={() => {}} />)
+    fireEvent.change(url(), { target: { value: 'foo' } })
+    fireEvent.click(screen.getByText('Send'))
+    fireEvent.change(url(), { target: { value: 'https://api.test/x' } })
+    expect(screen.queryByText(/URL must start/)).not.toBeInTheDocument()
+  })
+
   it('hides the body editor for GET', () => {
     render(<RequestForm inFlight={false} onSend={() => {}} />)
     expect(

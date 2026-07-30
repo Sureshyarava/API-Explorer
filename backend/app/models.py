@@ -22,11 +22,13 @@ class ProxyRequest(BaseModel):
 class ProxyResponseData(BaseModel):
     status: int
     statusText: str
-    headers: dict[str, str]
+    # list of (name, value) pairs: repeated headers like Set-Cookie must survive
+    headers: list[tuple[str, str]]
     body: str | None
     contentType: str | None
     elapsedMs: int
     sizeBytes: int
+    truncated: bool = False
 
 
 class ProxyError(BaseModel):

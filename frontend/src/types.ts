@@ -22,11 +22,13 @@ export interface ProxyRequest {
 export interface ProxyResponseData {
   status: number
   statusText: string
-  headers: Record<string, string>
+  // (name, value) pairs: repeated headers like Set-Cookie must survive
+  headers: [string, string][]
   body: string | null
   contentType: string | null
   elapsedMs: number
   sizeBytes: number
+  truncated: boolean
 }
 
 export interface ProxyError {

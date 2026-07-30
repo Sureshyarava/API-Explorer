@@ -54,11 +54,12 @@ Response is always HTTP 200 from our API with a discriminated envelope, so the f
   "response": {
     "status": 404,
     "statusText": "Not Found",
-    "headers": { "content-type": "application/json" },
+    "headers": [["content-type", "application/json"], ["set-cookie", "a=1"], ["set-cookie", "b=2"]],
     "body": "raw response text",
     "contentType": "application/json",
     "elapsedMs": 132,
-    "sizeBytes": 512
+    "sizeBytes": 512,
+    "truncated": false
   }
 }
 ```
@@ -70,11 +71,14 @@ Response is always HTTP 200 from our API with a discriminated envelope, so the f
 ```
 
 Rules:
-- `url` must be http/https (Pydantic validation → 422, surfaced as a form error).
+- `url` must be http/https. The frontend validates this inline before sending; the Pydantic validator (→ 422) is the backstop for direct API callers.
 - Body is forwarded verbatim as bytes with the user's headers; the frontend is responsible for JSON validity.
 - Response body is decoded as text; if decoding fails (binary), `body` is null and the frontend shows a "binary response" notice with the size.
-- Hop-by-hop headers (`connection`, `transfer-encoding`, etc.) are stripped from the returned header map.
-- 30-second timeout on the httpx call → `timeout` error.
+- Response headers are a list of `(name, value)` pairs so repeated headers (e.g. `Set-Cookie`) survive intact.
+- Hop-by-hop headers (`connection`, `transfer-encoding`, etc.) are stripped from the returned headers.
+- Response bodies are capped at 10 MB; larger bodies are cut off with `truncated: true` and the UI shows a truncation notice.
+- 30-second timeout on the httpx call → `timeout` error. A single shared `AsyncClient` (FastAPI lifespan) executes all requests.
+- Null fields (`body`, `contentType`) serialize as explicit JSON `null`, never omitted keys — the frontend's `body === null` binary check depends on it.
 
 ## Frontend
 
@@ -93,7 +97,7 @@ Components (state lives in `App` via `useState`; no state library):
 
 | Failure | Where caught | UX |
 |---|---|---|
-| Malformed URL / bad method | Pydantic (422) | inline form error |
+| Malformed URL | RequestForm scheme check (Pydantic 422 as backstop) | inline form error |
 | Target unreachable / DNS | `proxy.py` → `ok: false, connection` | ErrorPanel |
 | Timeout (>30s) | `proxy.py` → `ok: false, timeout` | ErrorPanel |
 | Target returns 4xx/5xx | normal envelope | ResponseViewer, colored badge |
