@@ -19,4 +19,6 @@ Browsers block cross-origin requests to arbitrary APIs (CORS), so the frontend c
 
 ## Commands
 
-Not yet scaffolded. Add dev/build/test/lint commands here as `frontend/` and `backend/` land.
+- Backend (from `backend/`, venv active): `uvicorn app.main:app --port 8000 --reload` · tests: `python -m pytest tests/ -v`
+- Frontend (from `frontend/`): `npm run dev` · tests: `npm test` · build: `npm run build`
+- Backend venv: `python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt`

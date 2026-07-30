@@ -1,3 +1,136 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #1a1a1a;
+}
+
 body {
   margin: 0;
+  background: #f6f7f9;
+}
+
+.app {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.request-line {
+  display: flex;
+  gap: 0.5rem;
+  align-items: end;
+}
+
+.request-line input {
+  flex: 1;
+}
+
+.request-line input,
+.request-line select,
+.header-row input,
+.body-editor textarea {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.header-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.body-editor textarea {
+  width: 100%;
+  margin-top: 0.5rem;
+  font-family: monospace;
+  box-sizing: border-box;
+}
+
+.json-warning {
+  color: #b45309;
+  margin: 0.25rem 0 0;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+button[type='submit'] {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.response-viewer {
+  margin-top: 2rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.response-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.meta-bar {
+  display: flex;
+  gap: 1rem;
+  color: #6b7280;
+}
+
+.status-badge {
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  color: #fff;
+}
+
+.status-green { background: #16a34a; }
+.status-blue { background: #2563eb; }
+.status-orange { background: #ea580c; }
+.status-red { background: #dc2626; }
+
+.tabs {
+  margin: 1rem 0 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.response-body {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.response-headers td {
+  padding: 0.25rem 1rem 0.25rem 0;
+  font-family: monospace;
+}
+
+.error-panel {
+  margin-top: 2rem;
+  border: 1px solid #dc2626;
+  background: #fef2f2;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.error-panel h2 {
+  color: #dc2626;
+  margin: 0 0 0.5rem;
 }
