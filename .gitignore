@@ -1,2 +1,4 @@
 CLAUDE.local.md
 backend/.venv/
+__pycache__/
+*.pyc
